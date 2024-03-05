@@ -9,7 +9,6 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CleanupApiController : ControllerBase
     {
-
         [HttpPost]
         [Route("clear")]
         public IActionResult Clear()
@@ -17,6 +16,5 @@ namespace FlightPlanner.Controllers
             FlightStorage.Clear();
             return Ok();
         }
-           
     }
 }

@@ -18,11 +18,5 @@ namespace FlightPlanner.Models
 
             return this.AirportCode.Trim().ToLower() == airport.AirportCode.Trim().ToLower();
         }
-
-        /*public override int GetHashCode()
-        {
-            return HashCode.Combine(Country, City, AirportCode);  
-        }*/
-
     }
 }

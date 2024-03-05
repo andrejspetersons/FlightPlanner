@@ -55,8 +55,6 @@ namespace FlightPlanner.Controllers
                     return BadRequest(flight);
                 }
 
-
-
                 if (flight.From.isEqualAirport(flight.To))
                 {
                     return BadRequest("Invalid airport");

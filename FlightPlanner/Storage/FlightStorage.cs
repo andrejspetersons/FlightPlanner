@@ -26,21 +26,22 @@ namespace FlightPlanner.Storage
 
         public static bool DeleteFlightById(int id)
         {
-                var flightToRemove = GetFlightById(id);
-                if (flightToRemove == null)
-                {
-                    return true;
-                }
-                else
-                {
-                    if (!_flights.Contains(flightToRemove))
-                    {
-                        return false;
-                    }
+            var flightToRemove = GetFlightById(id);
 
-                    _flights.Remove(flightToRemove);
-                    return true;
+            if (flightToRemove == null)
+            {
+                return true;
+            }
+            else
+            {
+                if (!_flights.Contains(flightToRemove))
+                {
+                    return false;
                 }
+
+                _flights.Remove(flightToRemove);
+                return true;
+            }
         }
 
         public static Airport[] AirportByKeywords(string keywords)
@@ -56,6 +57,13 @@ namespace FlightPlanner.Storage
                     )
                 {
                     result.Add(_flights[i].From);
+                }
+                else if (_flights[i].To.AirportCode.Contains(keywords,StringComparison.OrdinalIgnoreCase)||
+                         _flights[i].To.Country.Contains(keywords, StringComparison.OrdinalIgnoreCase) ||
+                         _flights[i].To.City.Contains(keywords, StringComparison.OrdinalIgnoreCase)
+                        )
+                {
+                    result.Add(_flights[i].To);
                 }
             }
             
