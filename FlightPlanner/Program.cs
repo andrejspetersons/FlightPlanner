@@ -21,7 +21,7 @@ namespace FlightPlanner
 
             builder.Services.AddDbContextPool<FlightPlannerDbContext>((_, options) =>
             {
-                options.UseSqlite("Data Source=flight-planner.db");
+                options.UseSqlite(builder.Configuration.GetConnectionString("FlightPlanner"));
             });
             builder.Services.AddScoped<FlightStorage>();
             builder.Services.AddEndpointsApiExplorer();
