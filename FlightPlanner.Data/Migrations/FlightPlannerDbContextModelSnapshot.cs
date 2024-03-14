@@ -2,24 +2,21 @@
 using FlightPlanner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FlightPlanner.Migrations
+namespace FlightPlanner.Data.Migrations
 {
     [DbContext(typeof(FlightPlannerDbContext))]
-    [Migration("20240226101250_Init")]
-    partial class Init
+    partial class FlightPlannerDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
 
-            modelBuilder.Entity("FlightPlanner.Models.Airport", b =>
+            modelBuilder.Entity("FlightPlanner.Core.Models.Airport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -27,8 +24,7 @@ namespace FlightPlanner.Migrations
 
                     b.Property<string>("AirportCode")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasAnnotation("Relational:JsonPropertyName", "airport");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -43,7 +39,7 @@ namespace FlightPlanner.Migrations
                     b.ToTable("Airports");
                 });
 
-            modelBuilder.Entity("FlightPlanner.Models.Flight", b =>
+            modelBuilder.Entity("FlightPlanner.Core.Models.Flight", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,15 +72,15 @@ namespace FlightPlanner.Migrations
                     b.ToTable("Flights");
                 });
 
-            modelBuilder.Entity("FlightPlanner.Models.Flight", b =>
+            modelBuilder.Entity("FlightPlanner.Core.Models.Flight", b =>
                 {
-                    b.HasOne("FlightPlanner.Models.Airport", "From")
+                    b.HasOne("FlightPlanner.Core.Models.Airport", "From")
                         .WithMany()
                         .HasForeignKey("FromId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlightPlanner.Models.Airport", "To")
+                    b.HasOne("FlightPlanner.Core.Models.Airport", "To")
                         .WithMany()
                         .HasForeignKey("ToId")
                         .OnDelete(DeleteBehavior.Cascade)

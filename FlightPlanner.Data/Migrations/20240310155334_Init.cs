@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace FlightPlanner.Migrations
+namespace FlightPlanner.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration

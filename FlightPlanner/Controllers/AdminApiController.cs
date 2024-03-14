@@ -1,10 +1,14 @@
-﻿using FlightPlanner.Models;
-using FlightPlanner.Storage;
+﻿
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using FlightPlanner.Core.Models;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Models;
+using AutoMapper;
+using FluentValidation;
+using FlightPlanner.Services;
 
 namespace FlightPlanner.Controllers
 {
@@ -14,75 +18,61 @@ namespace FlightPlanner.Controllers
     public class AdminApiController : ControllerBase
     {
         private static readonly object _flightlocks = new object();
-        private readonly FlightStorage _flights;
+        private readonly IFlightService _flightService;
+        private readonly IMapper _mapper;
+        private readonly IValidator<AddFlightRequest> _validator;
 
-        public AdminApiController(FlightStorage flights)
+
+        public AdminApiController(IFlightService flightService,IMapper mapper,IValidator<AddFlightRequest> validator)
         {
-            _flights = flights;        
+            _flightService = flightService;
+            _mapper = mapper;
+            _validator = validator;         
         }
 
         [HttpGet]
         [Route("flights/{id}")]
         public IActionResult GetFlight(int id)
         {
-            var flight = _flights.GetFlightById(id);
-
-            if (flight == null)
+            lock (_flightlocks)
             {
-                return NotFound();
+                var flight = _flightService.GetFullFlightById(id);
+
+                if (flight == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(_mapper.Map<AddFlightResponse>(flight));
             }
-
-            return Ok(flight);
-
         }
 
         [HttpPut]
         [Route("flights")]
-        public IActionResult AddFlight(Flight flight)
+        public IActionResult AddFlight(AddFlightRequest request)
         {
             lock (_flightlocks)
             {
-                bool Exist = _flights.FlightExist(flight);
-
-                if (Exist)
+                var flight = _mapper.Map<Flight>(request);
+                var validationResult = _validator.Validate(request);
+                if (!validationResult.IsValid)
                 {
-                    return Conflict();
+                    return BadRequest(validationResult.Errors);
                 }
 
-                if (flight == null)
-                {
-                    return BadRequest(flight);
-                }
-
-                if (
-                    string.IsNullOrEmpty(flight.Carrier) ||
-                    string.IsNullOrEmpty(flight.ArrivalTime) ||
-                    string.IsNullOrEmpty(flight.DepartureTime) ||
-                    string.IsNullOrEmpty(flight.From.City) ||
-                    string.IsNullOrEmpty(flight.From.Country) ||
-                    string.IsNullOrEmpty(flight.From.AirportCode) ||
-                    string.IsNullOrEmpty(flight.To.City) ||
-                    string.IsNullOrEmpty(flight.To.Country) ||
-                    string.IsNullOrEmpty(flight.To.AirportCode)
-                )
+                if (_flightService.isEqualAirport(flight))
                 {
                     return BadRequest(flight);
-                }
+                }                
 
-
-
-                if (flight.From.isEqualAirport(flight.To))
+                if (_flightService.flightExist(flight))
                 {
-                    return BadRequest("Invalid airport");
+                    return Conflict(flight);
                 }
 
-                if (DateTime.Parse(flight.ArrivalTime) <= DateTime.Parse(flight.DepartureTime))
-                {
-                    return BadRequest("Invalid date");
-                }
-
-                _flights.AddFlight(flight);
-                return Created($"Created flight {flight.Id}", flight);
+                _flightService.Create(flight);
+                
+                return Created("", _mapper.Map<AddFlightResponse>(flight));
             }
         }
 
@@ -92,13 +82,23 @@ namespace FlightPlanner.Controllers
         {
             lock (_flightlocks)
             {
-                if (_flights.DeleteFlightById(id))
+                var flight = _flightService.GetFullFlightById(id);
+
+                if (flight == null)
                 {
                     return Ok();
                 }
                 else
                 {
-                    return BadRequest();
+                    if (!_flightService.flightExist(flight))
+                    {
+                        return BadRequest();
+                    }
+                    else
+                    {
+                        _flightService.Delete(flight);
+                        return Ok();
+                    }
                 }
             }
         }
