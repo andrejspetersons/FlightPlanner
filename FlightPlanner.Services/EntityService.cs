@@ -6,14 +6,16 @@ namespace FlightPlanner.Services
 {
     public class EntityService<T> : DbService, IEntityService<T> where T : Entity
     {
-
         public EntityService(IFlightPlannerDbContext context):base(context)
         {
                 
         }
         public void Create(T entity)
         {
-           Create<T>(entity);
+            lock(SharedLock.LockObject)
+            {
+                Create<T>(entity); 
+            }          
         }
 
         public void Delete(T entity)
@@ -29,7 +31,6 @@ namespace FlightPlanner.Services
         public IEnumerable<T> GetAll()
         {
             return GetAll<T>();
-
         }
 
         public T? GetById(int id)

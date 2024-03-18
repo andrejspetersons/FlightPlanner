@@ -2,17 +2,13 @@
 using FlightPlanner.Core.Services;
 using FlightPlanner.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlightPlanner.Services
 {
     public class DbService : IDbService
     {
         protected readonly IFlightPlannerDbContext _context;
+        private static readonly object _lock = new object();
 
         public DbService(IFlightPlannerDbContext context)
         {
@@ -20,14 +16,14 @@ namespace FlightPlanner.Services
         }
         public void Create<T>(T entity) where T : Entity
         {
-                _context.Set<T>().Add(entity);
-                _context.SaveChanges();         
+            _context.Set<T>().Add(entity);
+            _context.SaveChanges();
         }
 
         public void Delete<T>(T entity) where T : Entity
         {
-                _context.Set<T>().Remove(entity);
-                _context.SaveChanges();   
+            _context.Set<T>().Remove(entity);
+            _context.SaveChanges();
         }
 
         public void DeleteAll<T>() where T : Entity
@@ -39,7 +35,7 @@ namespace FlightPlanner.Services
 
         public IEnumerable<T> GetAll<T>() where T : Entity
         {
-                return _context.Set<T>().ToList();          
+            return _context.Set<T>().ToList();          
         }
 
         public T? GetById<T>(int id) where T : Entity

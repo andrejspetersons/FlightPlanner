@@ -4,6 +4,7 @@ using FlightPlanner.Core.Services;
 using FlightPlanner.Data;
 using FlightPlanner.Handlers;
 using FlightPlanner.Services;
+using FlightPlanner.UseCases;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -33,15 +34,15 @@ namespace FlightPlanner
             builder.Services.AddTransient<IDbService, DbService>();
             builder.Services.AddTransient<IEntityService<Airport>, EntityService<Airport>>();
             builder.Services.AddTransient<IEntityService<Flight>, EntityService<Flight>>();
-            builder.Services.AddTransient<IFlightService, FlightService>();
+            builder.Services.AddScoped<IFlightService, FlightService>();
             builder.Services.AddTransient<IAirportService, AirportService>();
 
 
             var assembly = Assembly.GetExecutingAssembly();
 
             builder.Services.AddAutoMapper(assembly);
-
             builder.Services.AddValidatorsFromAssembly(assembly);
+            builder.Services.AddServices();
 
 
 

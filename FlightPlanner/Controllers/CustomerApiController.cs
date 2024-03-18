@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using FlightPlanner.Models;
-using FlightPlanner.Core.Services;
-using AutoMapper;
 using FlightPlanner.Core.Models;
-using FluentValidation;
+using MediatR;
+using FlightPlanner.UseCases.Airports;
+using FlightPlanner.Extensions;
+using FlightPlanner.UseCases.Flights.SearchFlight;
+using FlightPlanner.UseCases.Flights.FindFlight;
 
 namespace FlightPlanner.Controllers
 {
@@ -11,47 +12,31 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
-        private static readonly object _flightlocker = new object();
-        private readonly IFlightService _flightService;
-        private readonly IAirportService _airportService;
-        private readonly IMapper _mapper;
-        private readonly IValidator<SearchFlightsRequest> _searchValidator;
-        public CustomerApiController(IFlightService flightService,IAirportService airportService,IMapper mapper,IValidator<SearchFlightsRequest> searchValidator)
+        private readonly IMediator _mediator;
+        public CustomerApiController(IMediator mediator)
         {
-            _flightService = flightService;
-            _airportService = airportService;
-            _mapper = mapper;
-            _searchValidator = searchValidator;
+            _mediator = mediator;
         }
 
         [HttpGet]
         [Route("airports")]
-        public IActionResult SearchAirport(string search)
+        public async Task<IActionResult> SearchAirport(string search)
         {
-            var airport = _airportService.AirportsByKeywords(search);
-            return Ok(_mapper.Map<IEnumerable<AirportViewModel>>(airport)); ///what!!
+            return (await _mediator.Send(new SearchKeywordCommand(search))).ToActionResult();
         }
 
         [HttpGet]
         [Route("flights/{id}")]
-        public IActionResult FindFlightById(int id)
+        public async Task<IActionResult> FindFlightById(int id)
         {
-            var flight = _flightService.GetFullFlightById(id);
-            return flight == null ? NotFound() : Ok(_mapper.Map<AddFlightResponse>(flight));
+            return (await _mediator.Send(new FindFlightCommand(id))).ToActionResult();
         }
 
         [HttpPost]
         [Route("flights/search")]
-        public IActionResult SearchFlights(SearchFlightsRequest req)
+        public async Task<IActionResult> SearchFlights(SearchFlightsRequest req)
         {
-            var validationResult = _searchValidator.Validate(req);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(req);
-            }
-
-            var response = _flightService.SearchFlights(req);
-            return Ok(response);
+            return (await _mediator.Send(new SearchFlightCommand(req))).ToActionResult();
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using FlightPlanner.Core.Models;
-
-namespace FlightPlanner.Models
+﻿namespace FlightPlanner.UseCases.Models
 {
     public class AddFlightRequest
     {

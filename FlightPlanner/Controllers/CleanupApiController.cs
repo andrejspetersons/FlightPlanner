@@ -1,5 +1,6 @@
-﻿using FlightPlanner.Core.Services;
-using Microsoft.AspNetCore.Http;
+﻿using FlightPlanner.Extensions;
+using FlightPlanner.UseCases.Cleanup;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner.Controllers
@@ -8,21 +9,17 @@ namespace FlightPlanner.Controllers
     [Route("testing-api")]
     public class CleanupApiController : ControllerBase
     {
-        private readonly IFlightService _flightService;
-        private readonly IAirportService _airportService;
-        public CleanupApiController(IFlightService flightService,IAirportService airportService)
+        private readonly IMediator _mediator;
+        public CleanupApiController(IMediator mediator)
         {
-            _flightService = flightService;
-            _airportService = airportService;
+            _mediator = mediator;
         }
 
         [HttpPost]
         [Route("clear")]
-        public IActionResult Clear()
+        public async Task<IActionResult> ClearAsync()
         {
-            _airportService.DeleteAll();
-            _flightService.DeleteAll();
-            return Ok();
+            return (await _mediator.Send(new CleanupCommand())).ToActionResult();
         }
     }
 }

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlanner.Data", "Fligh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlanner.Services", "FlightPlanner.Services\FlightPlanner.Services.csproj", "{B166D14C-0B95-449D-AC18-4E6BBDF5240E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlanner.UseCases", "FlightPlanner.UseCases\FlightPlanner.UseCases.csproj", "{F83C1255-97CC-41DC-8A32-1B4318A43C5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B166D14C-0B95-449D-AC18-4E6BBDF5240E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B166D14C-0B95-449D-AC18-4E6BBDF5240E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B166D14C-0B95-449D-AC18-4E6BBDF5240E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F83C1255-97CC-41DC-8A32-1B4318A43C5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F83C1255-97CC-41DC-8A32-1B4318A43C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F83C1255-97CC-41DC-8A32-1B4318A43C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F83C1255-97CC-41DC-8A32-1B4318A43C5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
